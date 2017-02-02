@@ -6,8 +6,11 @@ IFS=$' \t\n' # workaround for conda 4.2.13+toolchain bug
 # Adopt a Unix-friendly path if we're on Windows (see bld.bat).
 [ -n "$PATH_OVERRIDE" ] && export PATH="$PATH_OVERRIDE"
 
-# On Windows we want $LIBRARY_PREFIX not $PREFIX.
-if [ -n "$LIBRARY_PREFIX" ] ; then
+# On Windows we want $LIBRARY_PREFIX not $PREFIX, but its Unix path
+# currently works out to "/" which needs special-casing.
+if [ "$LIBRARY_PREFIX" = / ] ; then
+    useprefix=""
+elif [ -n "$LIBRARY_PREFIX" ] ; then
     useprefix="$LIBRARY_PREFIX"
 else
     useprefix="$PREFIX"
@@ -21,7 +24,7 @@ if [ -n "$VS_MAJOR" ] ; then
     autoreconf_args=(
         --force
         --install
-        -I "$PREFIX/Library/mingw-w$ARCH/share/aclocal"
+        -I "$useprefix/mingw-w$ARCH/share/aclocal"
     )
     autoreconf "${autoreconf_args[@]}"
 fi
