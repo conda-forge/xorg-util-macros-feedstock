@@ -1,8 +1,8 @@
 {% set xorg_name = "util-macros" %}
 {% set xorg_category = "util" %}
 {% set name = "xorg-" ~ xorg_name %}
-{% set version = "1.19.0" %}
-{% set sha256 = "2835b11829ee634e19fa56517b4cfc52ef39acea0cd82e15f68096e27cbed0ba" %}
+{% set version = "1.19.2" %}
+{% set sha256 = "d7e43376ad220411499a79735020f9d145fdc159284867e99467e0d771f3e712" %}
 {% set am_version = "1.15" %}
 
 package:
@@ -15,7 +15,7 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 0
   detect_binary_files_with_prefix: true
 
 requirements:
