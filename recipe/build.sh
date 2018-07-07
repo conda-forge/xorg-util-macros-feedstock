@@ -6,27 +6,37 @@ IFS=$' \t\n' # workaround for conda 4.2.13+toolchain bug
 # Adopt a Unix-friendly path if we're on Windows (see bld.bat).
 [ -n "$PATH_OVERRIDE" ] && export PATH="$PATH_OVERRIDE"
 
-# On Windows we want $LIBRARY_PREFIX not $PREFIX, but its Unix path
-# currently works out to "/" which needs special-casing.
-if [ "$LIBRARY_PREFIX" = / ] ; then
-    useprefix=""
-elif [ -n "$LIBRARY_PREFIX" ] ; then
-    useprefix="$LIBRARY_PREFIX"
+# On Windows we want $LIBRARY_PREFIX in both "mixed" (C:/Conda/...) and Unix
+# (/c/Conda) forms, but Unix form is often "/" which can cause problems.
+if [ -n "$LIBRARY_PREFIX_M" ] ; then
+    mprefix="$LIBRARY_PREFIX_M"
+    if [ "$LIBRARY_PREFIX_U" = / ] ; then
+        uprefix=""
+    else
+        uprefix="$LIBRARY_PREFIX_U"
+    fi
 else
-    useprefix="$PREFIX"
+    mprefix="$PREFIX"
+    uprefix="$PREFIX"
 fi
 
 # On Windows we need to regenerate the configure scripts.
-if [ -n "$VS_MAJOR" ] ; then
+if [ -n "$CYGWIN_PREFIX" ] ; then
     am_version=1.15 # keep sync'ed with meta.yaml
     export ACLOCAL=aclocal-$am_version
     export AUTOMAKE=automake-$am_version
     autoreconf_args=(
         --force
         --install
-        -I "$useprefix/mingw-w64/share/aclocal" # note: this is correct for win32 also!
+        -I "$mprefix/share/aclocal"
+        -I "$BUILD_PREFIX_M/Library/mingw-w64/share/aclocal"
     )
     autoreconf "${autoreconf_args[@]}"
+
+    # And we need to add the search path that lets libtool find the
+    # msys2 stub libraries for ws2_32.
+    platlibs=$(cd $(dirname $(gcc --print-prog-name=ld))/../lib && pwd -W)
+    export LDFLAGS="$LDFLAGS -L$platlibs"
 fi
 
 # We used to provide our own config.{guess,sub} on Windows; now we are
@@ -35,17 +45,16 @@ fi
 # fails on msys2 unless we use msys2's autotools. But to smooth the transition
 # we'll keep distributing the files for a bit.
 
-mkdir -p $useprefix/share/util-macros
+mkdir -p $uprefix/share/util-macros
 
 for f in config.guess config.sub ; do
     cp -p $RECIPE_DIR/$f .
-    cp -p $RECIPE_DIR/$f $useprefix/share/util-macros/
+    cp -p $RECIPE_DIR/$f $uprefix/share/util-macros/
 done
 
-export PKG_CONFIG_LIBDIR=$useprefix/lib/pkgconfig:$useprefix/share/pkgconfig
-
+export PKG_CONFIG_LIBDIR=$uprefix/lib/pkgconfig:$uprefix/share/pkgconfig
 configure_args=(
-    --prefix=$useprefix
+    --prefix=$mprefix
     --disable-dependency-tracking
     --disable-selective-werror
     --disable-silent-rules
