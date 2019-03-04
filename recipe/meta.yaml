@@ -27,6 +27,7 @@ requirements:
     - posix  # [win]
     - {{ compiler('c') }}        # [unix]
     - {{ compiler('m2w64_c') }}  # [win]
+    - make  # [unix]
   host:
     - m2w64-pkg-config  # [win]
 
