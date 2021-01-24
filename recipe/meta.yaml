@@ -1,8 +1,8 @@
 {% set xorg_name = "util-macros" %}
 {% set xorg_category = "util" %}
 {% set name = "xorg-" ~ xorg_name %}
-{% set version = "1.19.2" %}
-{% set sha256 = "d7e43376ad220411499a79735020f9d145fdc159284867e99467e0d771f3e712" %}
+{% set version = "1.19.3" %}
+{% set sha256 = "0f812e6e9d2786ba8f54b960ee563c0663ddbe2434bf24ff193f5feab1f31971" %}
 {% set am_version = "1.15" %}
 
 package:
@@ -15,7 +15,7 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1001
+  number: 0
   detect_binary_files_with_prefix: true
 
 requirements:
@@ -39,7 +39,7 @@ about:
   license: MIT
   license_family: MIT
   license_file: COPYING
-  summary: 'Development utility macros for X.org software.'
+  summary: Development utility macros for X.org software.
 
 extra:
   recipe-maintainers:
