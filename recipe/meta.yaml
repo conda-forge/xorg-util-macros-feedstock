@@ -15,7 +15,7 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 0
+  number: 1
   detect_binary_files_with_prefix: true
 
 requirements:
@@ -23,13 +23,15 @@ requirements:
     - m2-autoconf  # [win]
     - m2-automake{{ am_version }}  # [win]
     - m2-libtool  # [win]
-    - pkg-config  # [not win]
-    - posix  # [win]
+    - pkg-config
+    - m2-base  # [win]
     - {{ compiler('c') }}        # [unix]
+    - {{ stdlib("c") }}          # [unix]
     - {{ compiler('m2w64_c') }}  # [win]
-    - make  # [unix]
+    - {{ stdlib("m2w64_c") }}    # [win]
+    - make     # [unix]
+    - m2-make  # [win]
   host:
-    - m2w64-pkg-config  # [win]
 
 test:
   commands:
