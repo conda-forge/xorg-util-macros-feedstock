@@ -53,3 +53,5 @@ make install
 if [[ "${CONDA_BUILD_CROSS_COMPILATION:-}" != "1" || "${CROSSCOMPILING_EMULATOR}" != "" ]]; then
     make check
 fi
+
+rm -rf $uprefix/share/util-macros
