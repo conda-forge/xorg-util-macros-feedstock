@@ -3,7 +3,6 @@
 {% set name = "xorg-" ~ xorg_name %}
 {% set version = "1.20.2" %}
 {% set sha256 = "9ac269eba24f672d7d7b3574e4be5f333d13f04a7712303b1821b2a51ac82e8e" %}
-{% set am_version = "1.16" %} # keep synchronized with build.sh
 
 package:
   name: {{ name|lower }}
@@ -14,26 +13,28 @@ source:
   sha256: {{ sha256 }}
 
 build:
-  number: 1
+  number: 2
   detect_binary_files_with_prefix: true
 
 requirements:
   build:
-    - m2-autoconf                  # [win]
-    - m2-automake{{ am_version }}  # [win]
-    - m2-libtool                   # [win]
     - pkg-config                   # [unix]
-    - m2-pkg-config                # [win]
     - m2-base                      # [win]
     - make                         # [unix]
     - m2-make                      # [win]
     - {{ compiler("c") }}          # [unix]
     - {{ stdlib("c") }}            # [unix]
-    - {{ compiler("m2w64_c") }}    # [win]
-    - {{ stdlib("m2w64_c") }}      # [win]
 
 test:
+  requires:
+    - pkg-config                    # [unix]
   commands:
+    - test -f ${PREFIX}/share/aclocal/xorg-macros.m4                    # [unix]
+    - test -f ${PREFIX}/share/pkgconfig/xorg-macros.pc                  # [unix]
+    - pkg-config --modversion xorg-macros                               # [unix]
+    - if not exist %LIBRARY_PREFIX%\share\aclocal\xorg-macros.m4 exit 1  # [win]
+    - if not exist %LIBRARY_PREFIX%\share\pkgconfig\xorg-macros.pc exit 1  # [win]
+    - 'findstr /C:"Version: {{ version }}" %LIBRARY_PREFIX%\share\pkgconfig\xorg-macros.pc'  # [win]
 
 about:
   home: https://www.x.org/
