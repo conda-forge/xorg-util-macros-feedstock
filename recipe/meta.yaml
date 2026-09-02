@@ -22,8 +22,6 @@ requirements:
     - m2-base                      # [win]
     - make                         # [unix]
     - m2-make                      # [win]
-    - {{ compiler("c") }}          # [unix]
-    - {{ stdlib("c") }}            # [unix]
 
 test:
   requires:
